@@ -43,7 +43,7 @@ function registerPush() {
             });
         })
         .then(function(subscription) {
-            saveSubscription(subscription);
+            //saveSubscription(subscription);
             return subscription;
         });
 }
@@ -80,7 +80,7 @@ function getPushSubscription() {
 function unsubscribePush() {
     return getPushSubscription().then(function(subscription) {
         return subscription.unsubscribe().then(function() {
-            deleteSubscription(subscription);
+            //deleteSubscription(subscription);
         });
     });
 }
