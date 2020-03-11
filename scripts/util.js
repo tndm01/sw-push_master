@@ -14,11 +14,16 @@ function urlB64ToUint8Array(base64String) {
 }
 
 function subscribePush(registration) {
-    return getPublicKey().then(function(key) {
-        return registration.pushManager.subscribe({
-            userVisibleOnly: true,
-            applicationServerKey: key
-        });
+    // return getPublicKey().then(function(key) {
+    //     return registration.pushManager.subscribe({
+    //         userVisibleOnly: true,
+    //         applicationServerKey: key
+    //     });
+    // });
+    var key = getPublicKey();
+    return registration.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: key
     });
 }
 
