@@ -27,7 +27,175 @@
 	<link rel="stylesheet" href="styles/push-notifications.css">
 </head>
 <body>
+	<header class="c-nav-bar">
+		<div class="l-contain c-nav-bar__contain" data-menu>
+			<nav class="c-nav-bar__breadcrumb" aria-label="breadcrumbs">
+				<ul class="u-simple-list">
+					<li class="c-nav-bar__index"><a href="https://developer.microsoft.com/en-us/microsoft-edge/testdrive/" class="c-nav-bar__more">Microsoft Edge Demos</a></li>
+					<li class="c-nav-bar__title"><span class="u-sr-only">Current demo:</span>Push Notifications</li>
+				</ul>
+			</nav>
+			<nav class="c-toc">
+				<button class="c-toc__btn" id="js-nav-btn" aria-haspopup="true" aria-expanded="false" aria-controls="js-nav-items" aria-label="Demo contents">
+					Contents <svg class="c-toc__arrow" xmlns="http://www.w3.org/2000/svg" width="12" height="12"><path fill="none" stroke="#FFF" stroke-miterlimit="10" d="M12 3L6 9 0 3"/></svg>
+				</button>
+				<ul class="c-toc__items" id="js-nav-items"  role="group" aria-hidden="true"></ul>
+			</nav>
+		</div>
+	</header>
 	<main role="main">
+		<div class="intro l-section--banner--dark-black">
+            <section class="intro__section l-contain">
+                <h1 class="intro__heading">Web Push Notifications</h1>
+                <img src="images/header-embellishment.svg" class="heading__image" role="presentation" alt="" />
+                <div class="intro__section__overview l-subsection" id="intro" data-nav-label="Introduction">
+                    <p class="highlight h3">Welcome to the future of the web &mdash; where push messages can help you achieve better engagement for your site or web app.</p>
+                    <div class="l-flex--guide l-subsection wrap">
+                        <div class="guide-col-main--alt">
+                            <p>It goes without saying that push notifications expand your reach to your users in a timely, power-efficient and dependable way. Users are re-engaged with customized and relevant content that will have them coming back for more.</p>
+                            <p>Inspired by the parallels between basic astrological ideas and push notification architecture, come join us on this journey to better understand how to set up your site – both the front-end and the back-end – to send push messages to a user without needing the browser or app to be opened. You can fork this tutorial itself on <a href="https://github.com/MicrosoftEdge/pushnotifications-demo">GitHub</a> and even set it up locally so that you can play with it.</p>
+                            <p>To see it in action, click the button below, accept the permission prompt (if you haven’t already), and then immediately close this tab (or browser). You should get a notification within 5 seconds after clicking the button below. Don’t worry, when you click the notification, it’ll take you right back here, so you can continue learning about push messages.</p>
+                            <button class="btn--action" id="initiate-push" disabled="disabled">Initiating...</button>
+                            <p>Just so you know, after clicking the button above, you’ll be getting push message updates daily. If you prefer to stop getting these push messages, click below to unsubcribe.</p>
+                            <button class="btn--action" id="unsubscribe-push" disabled="disabled">Initiating...</button>
+                        </div>
+                        <div class="guide-col-side">
+                            <img src="images/hero-image.svg" role="presentation" alt="" />
+                        </div>                            
+                    </div>
+                    <img src="images/hero-background-stars.svg" class="heading__image-background" role="presentation" alt="" />
+                </div>
+            </section>
+        </div>
+
+        
+
+        <section class="l-section guide-section side-image" id="setup-server" data-nav-label="Set up your server">
+            <h2><span class="title-step">Step 1</span> Set up your server</h2>
+            <div class="l-contain">
+                <div class="l-flex--guide l-subsection">
+                    <div class="guide-col-main">
+                        <p>To start, you’ll first need to make sure your web server is setup to send pushes. We’ll be using a node.js server and take advantage of the open-source <a href="https://www.npmjs.com/package/web-push">web-push</a> library so that we don’t have to worry about the encryption details involved with sending a push.</p>
+                        <p>We’ll first need to call <code>npm install express</code> (web server) and <code>npm install web-push</code> (web push library) from a terminal or command prompt so that we can use them in our app.</p>
+                        <p>We’ll need to specify the VAPID keys that will allow identifications between our app’s server and the notification server (e.g. <a href="https://firebase.google.com/docs/cloud-messaging/">Firebase Cloud Messaging</a> (FCM), <a href="https://blog.mozilla.org/services/">Mozilla Cloud Services</a> (MCS), and <a href="https://docs.microsoft.com/en-us/windows/uwp/design/shell/tiles-and-notifications/windows-push-notification-services--wns--overview">Windows Push Notification Service</a> (WNS) depending on which browser is being used). You only need to set up the VAPID keys once which can be generated easily:</p>
+<pre><code>var webpush = require('web-push');
+console.log(webpush.generateVAPIDKeys());</code></pre>
+                        <p>Once they’re generated, you can use them for as long as you need to by setting the vapidKeys variable to what you just got when calling <code>generateVAPIDKeys()</code>:</p>
+<pre><code>var vapidPublicKey = 'BL6As_YCGHPf3ZeDbklyVxgvJVb4Tr5qjZFS-J7XzkT5zQNghd9iUBUsqSlVO5znwTsZZrEOx8JFRDJc1JmkymA';
+var vapidPrivateKey = 'GnMVDgbtZrqs7tgKEkJaV5aZF8cVjoq7Ncz_TEVI_lo';
+        
+webpush.setVapidDetails(
+    'mailto:myaccount@outlook.com',
+    vapidPublicKey,
+    vapidPrivateKey
+);
+</code></pre>
+                        <p>We’ll need to set up a few endpoints on our server so that we can provide the public key to our site. The public key will be used when subscribing for push messages so that the notifications server (e.g. WNS or FCM) can know that we are who we say we are when we send subsequent push messages.</p>
+<pre><code>var express = require('express');
+var app = express();
+
+app.get('/api/key', function(req, res) {
+    res.send({
+        key: vapidPublicKey
+    });
+});</code></pre>
+                        <p>We’ll also need an endpoint that will allow us to store the subscription details for a user so that we’ll be able to push messages to them from our app’s server.</p>
+<pre><code>app.post('/api/save-subscription', function(req, res) {
+    // save req.body.subscription to a database
+
+    res.send('Success');
+});</code></pre>
+                    </div>
+                </div>
+                <div class="l-flex--guide--callout l-subsection">
+                    <div class="guide-col-side callout-text callout-light">
+                        <p class="highlight">In our example, we are going to be sending astrology trivia push updates to each user that is subscribed daily at 7am Pacific Time. This will be done in a scheduled task that runs on the server. Therefore, it’s important that we store the subscription information on the server so that we can send this update whenever we need to.</p>
+                    </div>
+                    <div class="guide-col-main--alt callout-img callout-light">
+                        <img src="images/cron-job.svg" class="callout-img--vertical" role="presentation" alt="" />
+                    </div>
+                </div>
+                <div class="l-flex--guide l-subsection">
+                    <div class="guide-col-main">
+                        <p>You can send pushes whenever you like, such as when something changes in your database, or after something changes on your site or app. For instance, if your site allows users to message each other and someone messages a user, you will want to send a push to that user so that they know they just got a message. Be mindful that the goal is to produce a notification that will have a good chance of being clicked by the user, otherwise it might defeat the purpose. For instance, it might make more sense to not send any push messages to a user that is already on your page since it might annoy them to get notifications when they’re already there. You’ll need to coordinate with the server to ensure that users are only getting notifications when they should be getting them.</p>
+                        <p>Using the web push library, we can send a push message from the server.</p>
+<pre><code>webPush.sendNotification(savedSubscriptionData, payload)
+    .then(function (response) {
+        console.log('sent');
+    });
+    </code></pre>
+                        <p>Now that we have the server all set up, let’s move on to making the actual page that will subscribe for the push!</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section class="l-section l-section--banner--dark" id="setup-page" data-nav-label="Set up your web page">
+            <h2><span class="title-step">Step 2</span> Set up your web page</h2>
+            <div class="l-contain side-image-left">
+                <div class="l-flex--guide l-subsection">
+                    <div class="guide-col-main">
+                        <p>When the page loads, the first thing you’ll want to do is get the public key from the application server so that you can set up the push subscription.</p>
+<pre><code>if (navigator.serviceWorker) {
+    fetch('./api/key')
+        .then(function(res) {
+            res.json().then(function(data) {
+                registerPush(data.key);
+            });
+        });
+}</code></pre>
+                        <p>Now, with the public key in hand, we’ll need to install the service worker and also create a push subscription.</p>
+<pre><code>function registerPush(appPubkey) {
+    navigator.serviceWorker.register('service-worker.js');
+    navigator.serviceWorker.ready.then(function(registration) {
+        return registration.pushManager.getSubscription()
+            .then(function(subscription) {
+                if (subscription) {
+                    return subscription;
+                }
+
+                return registration.pushManager.subscribe({
+                    userVisibleOnly: true,
+                    applicationServerKey: urlBase64ToUint8Array(appPubkey)
+                });
+            }) 
+            .then(function(subscription) {
+                return fetch('./api/save-subscription', {
+                    method: 'post',
+                    headers: { 'Content-type': 'application/json' },
+                    body: JSON.stringify({ subscription: subscription })
+                });
+            });
+    });
+}
+
+function urlBase64ToUint8Array(base64String) {
+    var padding = '='.repeat((4 - base64String.length % 4) % 4);
+    var base64 = (base64String + padding)
+        .replace(/\-/g, '+')
+        .replace(/_/g, '/');
+
+    var rawData = window.atob(base64);
+    var outputArray = new Uint8Array(rawData.length);
+
+    for (var i = 0; i &lt; rawData.length; ++i)  {
+        outputArray[i] = rawData.charCodeAt(i);
+    }
+
+    return outputArray;
+}</code></pre>
+                        <p>We’ll need to make sure that we have an active service worker before we attempt to subscribe for push. We can do this by using <code>navigator.serviceWorker.ready</code> which will resolve when a service worker is active.</p>
+                    </div>
+                </div>
+                <div class="l-flex--guide--callout l-subsection">
+                    <div class="guide-col-side callout-text-dark callout-dark">
+                        <p class="highlight">At this point, before a new push subscription is created, the browser will check whether the user granted permission to receive notifications. If not, the user will be prompted by the browser for permission.</p>
+                    </div>
+                    <div class="guide-col-main--alt callout-img callout-dark">
+                        <img src="images/notifications-permission.svg" class="callout-img--vertical" alt="" role="presentation" />
+                    </div>
+                </div>
+            </div>
+        </section>
         <section class="l-section" id="does-it-work" data-nav-label="Make sure it all works">
             <h2><span class="title-step">Step 3</span> Make sure it all works</h2>
             <div class="l-contain">
