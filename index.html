@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en-us">
+<head>
+	<meta charset="utf-8">
+	<title>Web Push Notifications Demo | Microsoft Edge Demos</title>
+	<meta name="viewport" content="width=device-width">
+	<meta name="og:title" content="Push Notifications">
+	<meta name="description" content="Push notifications can help you achieve what apps have long been able to do. Join us as we explore how to build the front-end and back-end of a push notification">
+	<meta name="keywords" content="PWAS, push notifications, service worker">
+    <meta name="author" content="ststimac, aliams, molant">
+    
+    <meta name="twitter:card" content="summary_large_image">
+	<meta name="twitter:site" content="@msedgedev">
+	<meta name="twitter:title" content="Push Notifiations Demo">
+	<meta name="twitter:description" content="Push notifications can help you achieve what apps have long been able to do. Join us as we explore how to build the front-end and back-end of a push notification">
+	<meta name="twitter:image" content="images/social-image.jpg">
+
+	<meta property="og:title" content="Push Notifications Demo">
+	<meta property="og:description" content="Push notifications can help you achieve what apps have long been able to do. Join us as we explore how to build the front-end and back-end of a push notification">
+	<meta property="og:site_name" content="Microsoft Edge Demos">
+	<meta property="og:locale" content="en_US">
+	<meta property="og:image" content="images/social-image.jpg">
+
+    <link rel="icon" href="images/favicon.png">
+	<link rel="stylesheet" href="https://az813057.vo.msecnd.net/styles/fonts-full-20180102.css">
+	<link rel="stylesheet" href="styles/demo-template.css">
+	<link rel="stylesheet" href="styles/push-notifications.css">
+</head>
+<body>
+	<main role="main">
+        <section class="l-section" id="does-it-work" data-nav-label="Make sure it all works">
+            <h2><span class="title-step">Step 3</span> Make sure it all works</h2>
+            <div class="l-contain">
+                <div class="l-flex--guide l-subsection">
+                    <div class="guide-col-main">
+                        <p>It’s now time to give it a try! The button below will send a message to the application server to send along a push request to the push service’s server so that your machine can get a push notification.</p>
+                        <button class="btn--action" id="initiate-push-2" disabled="disabled">Initiating...</button>
+                        <p>And again, after clicking the button above, you’ll be getting push message updates daily. If you prefer to stop getting these push messages, click below to unsubcribe.</p>
+                        <button class="btn--action" id="unsubscribe-push-2" disabled="disabled">Initiating...</button>
+                        <p>As a reminder, you can check out a fully working version of this demo on the <a href="https://github.com/MicrosoftEdge/pushnotifications-demo">GitHub repo</a>.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+	</main>
+    <script src="/scripts/util.js"></script>
+    <script src="/scripts/script.js"></script>
+</body>
+</html>
