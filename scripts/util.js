@@ -23,13 +23,14 @@ function subscribePush(registration) {
 }
 
 function getPublicKey() {
-    return fetch('./api/key')
-        .then(function(response) {
-            return response.json();
-        })
-        .then(function(data) {
-            return urlB64ToUint8Array(data.key);
-        });
+    // return fetch('./api/key')
+    //     .then(function(response) {
+    //         return response.json();
+    //     })
+    //     .then(function(data) {
+    //         return urlB64ToUint8Array(data.key);
+    //     });
+    return 'BBAQXM9gNxGSkaeYn4Tq27FTYdX8l52097mfettqHbiDd2fCmUwaiDoTFVScqJEljdU8K0PTGp9PeD3fW9eT2x8';
 }
 
 function publishSubscription(subscription, remove) {

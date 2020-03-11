@@ -129,73 +129,7 @@ app.get('/api/key', function(req, res) {
                 </div>
             </div>
         </section>
-        <section class="l-section l-section--banner--dark" id="setup-page" data-nav-label="Set up your web page">
-            <h2><span class="title-step">Step 2</span> Set up your web page</h2>
-            <div class="l-contain side-image-left">
-                <div class="l-flex--guide l-subsection">
-                    <div class="guide-col-main">
-                        <p>When the page loads, the first thing you’ll want to do is get the public key from the application server so that you can set up the push subscription.</p>
-<pre><code>if (navigator.serviceWorker) {
-    fetch('./api/key')
-        .then(function(res) {
-            res.json().then(function(data) {
-                registerPush(data.key);
-            });
-        });
-}</code></pre>
-                        <p>Now, with the public key in hand, we’ll need to install the service worker and also create a push subscription.</p>
-<pre><code>function registerPush(appPubkey) {
-    navigator.serviceWorker.register('service-worker.js');
-    navigator.serviceWorker.ready.then(function(registration) {
-        return registration.pushManager.getSubscription()
-            .then(function(subscription) {
-                if (subscription) {
-                    return subscription;
-                }
 
-                return registration.pushManager.subscribe({
-                    userVisibleOnly: true,
-                    applicationServerKey: urlBase64ToUint8Array(appPubkey)
-                });
-            }) 
-            .then(function(subscription) {
-                return fetch('./api/save-subscription', {
-                    method: 'post',
-                    headers: { 'Content-type': 'application/json' },
-                    body: JSON.stringify({ subscription: subscription })
-                });
-            });
-    });
-}
-
-function urlBase64ToUint8Array(base64String) {
-    var padding = '='.repeat((4 - base64String.length % 4) % 4);
-    var base64 = (base64String + padding)
-        .replace(/\-/g, '+')
-        .replace(/_/g, '/');
-
-    var rawData = window.atob(base64);
-    var outputArray = new Uint8Array(rawData.length);
-
-    for (var i = 0; i &lt; rawData.length; ++i)  {
-        outputArray[i] = rawData.charCodeAt(i);
-    }
-
-    return outputArray;
-}</code></pre>
-                        <p>We’ll need to make sure that we have an active service worker before we attempt to subscribe for push. We can do this by using <code>navigator.serviceWorker.ready</code> which will resolve when a service worker is active.</p>
-                    </div>
-                </div>
-                <div class="l-flex--guide--callout l-subsection">
-                    <div class="guide-col-side callout-text-dark callout-dark">
-                        <p class="highlight">At this point, before a new push subscription is created, the browser will check whether the user granted permission to receive notifications. If not, the user will be prompted by the browser for permission.</p>
-                    </div>
-                    <div class="guide-col-main--alt callout-img callout-dark">
-                        <img src="images/notifications-permission.svg" class="callout-img--vertical" alt="" role="presentation" />
-                    </div>
-                </div>
-            </div>
-        </section>
         <section class="l-section" id="does-it-work" data-nav-label="Make sure it all works">
             <h2><span class="title-step">Step 3</span> Make sure it all works</h2>
             <div class="l-contain">
