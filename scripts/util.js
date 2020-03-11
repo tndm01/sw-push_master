@@ -39,22 +39,22 @@ function getPublicKey() {
 
 }
 
-function publishSubscription(subscription, remove) {
-	return fetch('./api/' + (remove ? 'un' : '') + 'subscribe', {
-        method: 'post',
-        headers: {
-            'Content-type': 'application/json'
-        },
-        body: JSON.stringify({
-            subscription: subscription
-        })
-    });
-}
+// function publishSubscription(subscription, remove) {
+// 	return fetch('./api/' + (remove ? 'un' : '') + 'subscribe', {
+//         method: 'post',
+//         headers: {
+//             'Content-type': 'application/json'
+//         },
+//         body: JSON.stringify({
+//             subscription: subscription
+//         })
+//     });
+// }
 
-function saveSubscription(subscription) {
-    return publishSubscription(subscription);
-}
+// function saveSubscription(subscription) {
+//     return publishSubscription(subscription);
+// }
 
-function deleteSubscription(subscription) {
-    return publishSubscription(subscription, true);
-}
+// function deleteSubscription(subscription) {
+//     return publishSubscription(subscription, true);
+// }
